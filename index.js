@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-
+const Joi = require("joi");
 //data of movie genres
 const genres = [
   {
@@ -46,8 +46,16 @@ app.get("/api/genres/", (req, res) => {
 });
 //post request- create genres
 app.post("/api/genres/", (req, res) => {
-  if (!req.body.name || req.body.name < 3)
-    return res.status(404).send("Enter a mininum of 3 characters");
+  const schema = {
+    name: Joi.string()
+      .min(3)
+      .required()
+  };
+  const result = Joi.validate(req.body, schema);
+  console.log(result);
+
+  if (result.error)
+    return res.status(400).send(result.error.details[0].message);
   const genre = {
     genreID: genres.length + 1,
     name: req.body.name
