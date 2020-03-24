@@ -46,12 +46,6 @@ app.get("/api/genres/", (req, res) => {
 });
 //post request- create genres
 app.post("/api/genres/", (req, res) => {
-  const schema = {
-    name: Joi.string()
-      .min(3)
-      .required()
-  };
-  const result = Joi.validate(req.body, schema);
   console.log(result);
 
   if (result.error)
@@ -86,5 +80,13 @@ app.get("/api/genres/:genreID", (req, res) => {
   if (!genre) return res.status(404).send("Movie genre not found");
   res.send(genre);
 });
+validateGenre = genre => {
+  const schema = {
+    name: Joi.string()
+      .min(3)
+      .required()
+  };
+  return Joi.validate(genre, schema);
+};
 const port = process.env.PORT || 3000;
 app.listen(3000, () => console.log(`Listening on port ${port}...`));
