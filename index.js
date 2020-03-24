@@ -46,10 +46,8 @@ app.get("/api/genres/", (req, res) => {
 });
 //post request- create genres
 app.post("/api/genres/", (req, res) => {
-  console.log(result);
-
-  if (result.error)
-    return res.status(400).send(result.error.details[0].message);
+  const { error } = validateGenre(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
   const genre = {
     genreID: genres.length + 1,
     name: req.body.name
@@ -61,7 +59,9 @@ app.post("/api/genres/", (req, res) => {
 app.put("/api/genres/:genreID", (req, res) => {
   const genre = genres.find(c => c.genreID === parseInt(req.params.genreID));
   if (!genre) return res.status(404).send("movie genre  not found");
-  res.send(genre);
+
+  const { error } = validateGenre(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
   genre.name = req.body.name;
   res.send(genre);
 });
