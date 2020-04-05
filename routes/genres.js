@@ -46,12 +46,10 @@ router.put("/:genreID", async (req, res) => {
   res.send(genre);
 });
 //delete request - delete genres
-router.delete("/:genreID", (req, res) => {
-  const genre = genres.find((c) => c.genreID === parseInt(req.params.genreID));
+router.delete("/:genreID", async (req, res) => {
+  const genre = await Genre.findByIDandRemove(req.params.id);
   if (!genre) return res.status(404).send("movie genre  not found");
 
-  const index = genres.indexOf(genre);
-  genres.splice(index, 1);
   res.send(genre);
 });
 //get by id
