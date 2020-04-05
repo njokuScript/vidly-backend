@@ -1,21 +1,7 @@
 const moongose = require("mongoose");
 const express = require("express");
-const Joi = require("joi");
+const { Genre, validate } = require("../models/genre");
 const router = express.Router();
-
-//model database
-const Genre = moongose.model(
-  "Genre",
-  new moongose.Schema({
-    name: {
-      type: String,
-      required: true,
-      minlength: 5,
-      maxlength: 255,
-      lowercase: true,
-    },
-  })
-);
 
 //get request- read genres
 router.get("/", async (req, res) => {
@@ -24,7 +10,7 @@ router.get("/", async (req, res) => {
 });
 //post request- create genres
 router.post("/", async (req, res) => {
-  const { error } = validateGenre(req.body);
+  const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   let genre = new Genre({
     name: req.body.name,
@@ -38,7 +24,7 @@ router.post("/", async (req, res) => {
 });
 //put request - update genres
 router.put("/:id", async (req, res) => {
-  const { error } = validateGenre(req.body);
+  const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   const genre = await Genre.findByIdAndUpdate(
     req.params.id,
@@ -64,10 +50,4 @@ router.get("/:id", async (req, res) => {
   if (!genre) return res.status(404).send("Movie genre not found");
   res.send(genre);
 });
-validateGenre = (genre) => {
-  const schema = {
-    name: Joi.string().min(3).required(),
-  };
-  return Joi.validate(genre, schema);
-};
 module.exports = router;
