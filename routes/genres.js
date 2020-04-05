@@ -31,13 +31,18 @@ router.post("/", async (req, res) => {
   }
 });
 //put request - update genres
-router.put("/:genreID", (req, res) => {
-  const genre = genres.find((c) => c.genreID === parseInt(req.params.genreID));
-  if (!genre) return res.status(404).send("movie genre  not found");
-
+router.put("/:genreID", async (req, res) => {
   const { error } = validateGenre(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-  genre.name = req.body.name;
+  const genre = await Genre.findByIDandUpdate(
+    req.params.id,
+    { name: req.body.name },
+    {
+      new: true,
+    }
+  );
+  if (!genre) return res.status(404).send("movie genre  not found");
+
   res.send(genre);
 });
 //delete request - delete genres
