@@ -17,15 +17,18 @@ router.get("/", async (req, res) => {
   res.send(genres);
 });
 //post request- create genres
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { error } = validateGenre(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-  const genre = {
-    genreID: genres.length + 1,
+  let genre = new Genre({
     name: req.body.name,
-  };
-  genres.push(genre);
-  res.send(genre);
+  });
+  genre = await genre.save();
+  try {
+    res.send(genre);
+  } catch (error) {
+    console.log(error.message);
+  }
 });
 //put request - update genres
 router.put("/:genreID", (req, res) => {
