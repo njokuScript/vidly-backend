@@ -4,10 +4,16 @@ const Joi = require("joi");
 const router = express.Router();
 
 //model database
-const Genre = new moongose.model(
+const Genre = moongose.model(
   "Genre",
   new moongose.Schema({
-    name: { type: String, required: true, minlength: 5, maxlength: 255 },
+    name: {
+      type: String,
+      required: true,
+      minlength: 5,
+      maxlength: 255,
+      lowercase: true,
+    },
   })
 );
 
@@ -31,10 +37,10 @@ router.post("/", async (req, res) => {
   }
 });
 //put request - update genres
-router.put("/:genreID", async (req, res) => {
+router.put("/:id", async (req, res) => {
   const { error } = validateGenre(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-  const genre = await Genre.findByIDandUpdate(
+  const genre = await Genre.findByIdAndUpdate(
     req.params.id,
     { name: req.body.name },
     {
@@ -46,14 +52,14 @@ router.put("/:genreID", async (req, res) => {
   res.send(genre);
 });
 //delete request - delete genres
-router.delete("/:genreID", async (req, res) => {
-  const genre = await Genre.findByIDandRemove(req.params.id);
+router.delete("/:id", async (req, res) => {
+  const genre = await Genre.findByIdAndRemove(req.params.id);
   if (!genre) return res.status(404).send("movie genre  not found");
 
   res.send(genre);
 });
 //get by id
-router.get("/:genreID", async (req, res) => {
+router.get("/:id", async (req, res) => {
   const genre = await Genre.findByID(req.body.params);
   if (!genre) return res.status(404).send("Movie genre not found");
   res.send(genre);
