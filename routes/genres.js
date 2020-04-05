@@ -1,43 +1,19 @@
+const moongose = require("mongoose");
 const express = require("express");
-
 const Joi = require("joi");
 const router = express.Router();
-const genres = [
-  {
-    genreID: 1,
-    name: "Action"
-  },
-  {
-    genreID: 2,
-    name: "Thriller"
-  },
-  {
-    genreID: 3,
-    name: "Adventure"
-  },
-  {
-    genreID: 4,
-    name: "Horror"
-  },
-  {
-    genreID: 5,
-    name: "Comedy"
-  },
-  {
-    genreID: 6,
-    name: "Romance"
-  },
-  {
-    genreID: 7,
-    name: "SciFi"
-  },
-  {
-    genreID: 8,
-    name: "Crime"
-  }
-];
+
+//model database
+const Genre = new moongose.model(
+  "Genre",
+  new moongose.Schema({
+    name: { type: String, required: true, minlength: 5, maxlength: 255 },
+  })
+);
+
 //get request- read genres
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const genres = await Genre.find().sort("name");
   res.send(genres);
 });
 //post request- create genres
@@ -46,14 +22,14 @@ router.post("/", (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
   const genre = {
     genreID: genres.length + 1,
-    name: req.body.name
+    name: req.body.name,
   };
   genres.push(genre);
   res.send(genre);
 });
 //put request - update genres
 router.put("/:genreID", (req, res) => {
-  const genre = genres.find(c => c.genreID === parseInt(req.params.genreID));
+  const genre = genres.find((c) => c.genreID === parseInt(req.params.genreID));
   if (!genre) return res.status(404).send("movie genre  not found");
 
   const { error } = validateGenre(req.body);
@@ -63,7 +39,7 @@ router.put("/:genreID", (req, res) => {
 });
 //delete request - delete genres
 router.delete("/:genreID", (req, res) => {
-  const genre = genres.find(c => c.genreID === parseInt(req.params.genreID));
+  const genre = genres.find((c) => c.genreID === parseInt(req.params.genreID));
   if (!genre) return res.status(404).send("movie genre  not found");
 
   const index = genres.indexOf(genre);
@@ -72,15 +48,13 @@ router.delete("/:genreID", (req, res) => {
 });
 //get by id
 router.get("/:genreID", (req, res) => {
-  const genre = genres.find(c => c.genreID === parseInt(req.params.genreID));
+  const genre = genres.find((c) => c.genreID === parseInt(req.params.genreID));
   if (!genre) return res.status(404).send("Movie genre not found");
   res.send(genre);
 });
-validateGenre = genre => {
+validateGenre = (genre) => {
   const schema = {
-    name: Joi.string()
-      .min(3)
-      .required()
+    name: Joi.string().min(3).required(),
   };
   return Joi.validate(genre, schema);
 };
