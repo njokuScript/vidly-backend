@@ -8,6 +8,11 @@ router.get("/", async (req, res) => {
   const customer = await Customer.find().sort("name");
   res.send(customer);
 });
+//ger by id
+router.get("/:id", async (req, res) => {
+  const customer = await Customer.findById();
+  res.send(customer);
+});
 //post request to create customer
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);
