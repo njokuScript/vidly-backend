@@ -15,5 +15,5 @@ mongoose
 
 //data of movie genres
 
-const port = process.env.PORT || 3000;
-app.listen(3000, () => console.log(`Listening on port ${port}...`));
+const port = 5000;
+app.listen(5000, () => console.log(`Listening on port ${port}...`));
